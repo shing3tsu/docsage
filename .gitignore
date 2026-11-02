@@ -15,7 +15,9 @@ build/
 data/*
 logs/*
 *.log
+
+# --- Editor ----------------------------------------------------------------
 .vscode/
 .idea/
 .cursor/
-.DS_Store/
+.DS_Store
