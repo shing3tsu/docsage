@@ -1,0 +1,30 @@
+# Read top to bottom. A later line can undo an earlier one.
+#
+#   no slash      matches that name in any directory
+#   a slash       rooted here, at the repo root
+#   trailing /    directories only
+#   leading !     keep a path an earlier rule ignored
+#
+# A ! cannot bring a file back once a parent directory is ignored.
+# data/* ignores the children and leaves data/ itself matchable,
+# so a later !data/.gitkeep would work. data/ would make that impossible.
+
+# --- Secrets ---------------------------------------------------------------
+# .env* matches .env, .env.local, and .env.example.
+# The example has names only, so it stays in git. The ! must come after.
+.env*
+!.env.example
+
+# --- Dependencies and build output -----------------------------------------
+# No slash, so api/node_modules and ingest/dist match too.
+node_modules/
+dist/
+build/
+
+# --- Local data and logs ---------------------------------------------------
+# A slash in the middle roots these at the top of the repo.
+# ingest/data/ is not covered.
+# * does not match a slash. data/raw is ignored as a directory,
+# so everything under data/raw/ goes with it.
+data/*
+logs/*
