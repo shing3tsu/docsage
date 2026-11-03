@@ -4,7 +4,7 @@ volumes:
   hf-cache:
   
 networks:
-  docsage-net:
+  internal-net:
     driver: bridge
 
 services: 
@@ -64,5 +64,5 @@ services:
 
     
     networks:
-      - docsage-net
+      - internal-net
 
