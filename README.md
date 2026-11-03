@@ -13,7 +13,7 @@ A local retrieval system over the official docs, used to study for the CKA. The 
 - **Ingest** clones each docs repo at a pinned tag, cleans the Markdown, splits each page into chunks by heading, and stores the vectors plus metadata in Qdrant. A second run does not create duplicates.
 - **TEI** serves `BAAI/bge-small-en-v1.5` on the CPU. The same model embeds the chunks and the question. Vectors are 384 numbers.
 - **Qdrant** returns the nearest chunks and can filter by source, for example Kubernetes only. The index sits on a Docker volume.
-- **vLLM** serves `Qwen/Qwen2.5-3B-Instruct-AWQ` on the GPU through an OpenAI-compatible API. AWQ 4-bit weights keep the 3B model near 2.5 GB.
+- **vLLM** serves `Qwen/Qwen3-4B-AWQ` on the GPU through an OpenAI-compatible API. AWQ 4-bit weights keep the 4B model near 2.5 GB. Thinking mode is off, so an answer is the reply itself.
 - **LiteLLM** is the single gateway in front of vLLM and TEI. The API calls names like `chat` and `embed`.
 - **API** (NestJS) exposes `POST /ask` and `GET /health`. `/ask` embeds the question, searches Qdrant, and asks the model to answer only from those chunks.
 - **Chat UI** is a static page that calls `/ask` and shows the answer and its sources.
@@ -23,7 +23,7 @@ flowchart LR
   subgraph compose[docker compose]
     UI[chat UI] --> API[NestJS API]
     API --> GW[LiteLLM]
-    GW --> V[vLLM: Qwen2.5-3B-Instruct-AWQ, GPU]
+    GW --> V[vLLM: Qwen3-4B-AWQ, GPU]
     GW --> E[TEI: bge-small, CPU]
     API --> Q[(Qdrant)]
     ING[ingest job] --> GW
@@ -48,4 +48,4 @@ Foundation. The MIT license is in place. Compose (vLLM, then TEI and LiteLLM), i
 
 ## License
 
-Code in this repository is [MIT](LICENSE). The indexed documentation stays under the licenses in the table above. `Qwen/Qwen2.5-3B-Instruct-AWQ` is under the [Qwen Research License](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-AWQ/blob/main/LICENSE) (non-commercial use), and `BAAI/bge-small-en-v1.5` is [MIT](https://huggingface.co/BAAI/bge-small-en-v1.5). Both download at runtime, so this MIT license does not cover them.
+Code in this repository is [MIT](LICENSE). The indexed documentation stays under the licenses in the table above. `Qwen/Qwen3-4B-AWQ` is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0), and `BAAI/bge-small-en-v1.5` is [MIT](https://huggingface.co/BAAI/bge-small-en-v1.5). Both download at runtime, so this MIT license does not cover them.
