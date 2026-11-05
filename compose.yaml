@@ -2,7 +2,7 @@ name: docsage
 
 volumes:
   hf-cache:
-  
+  qdrant-data:
 networks:
   internal-net:
     driver: bridge
@@ -16,9 +16,6 @@ services:
       - HF_HOME=/cache/huggingface
       - HF_TOKEN=${HF_TOKEN}
       - VLLM_API_KEY=${VLLM_API_KEY}
-
-    volumes:
-      - hf-cache:/cache/huggingface
     
     stop_grace_period: 120s
 
@@ -64,7 +61,27 @@ services:
         max-size: 10m
         max-file: "3"
 
-    
+    volumes:
+      - hf-cache:/cache/huggingface
     networks:
       - internal-net
-
+  
+  qdrant:
+    image: qdrant/qdrant:v1.20.0@sha256:9bfc89f9914fc14876a88c05270685921a55b8877b254a98bcc1cc2f0a424cd2
+    ports:
+      - "127.0.0.1:6333:6333"
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+      - QDRANT__LOG_LEVEL=${QDRANT_LOG_LEVEL}
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && echo -e 'GET /readyz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q 'HTTP/1.1 200' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - internal-net
+      
