@@ -84,4 +84,28 @@ services:
       - qdrant-data:/qdrant/storage
     networks:
       - internal-net
-      
+  
+  tei:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:2538ea1c9640d3763b15af668039d24172d063b42337b0c27796fc2be180c78d
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      - HF_HOME=/cache/huggingface
+      - HF_TOKEN=${HF_TOKEN}
+    command:
+      - --model-id
+      - BAAI/bge-small-en-v1.5
+      - --revision
+      - 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+      - --json-output
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80 && echo -e 'GET /health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q 'HTTP/1.1 200' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    
+    volumes:
+      - hf-cache:/cache/huggingface
+    networks:
+      - internal-net
