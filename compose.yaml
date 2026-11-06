@@ -1,11 +1,5 @@
 name: docsage
 
-volumes:
-  hf-cache:
-  qdrant-data:
-networks:
-  internal-net:
-    driver: bridge
 
 services: 
   vllm:
@@ -109,3 +103,35 @@ services:
       - hf-cache:/cache/huggingface
     networks:
       - internal-net
+  
+  redis:
+    image: redis:8.10.3@sha256:f245f4c83b84a9e9a0588da1c9456e579455310f0945d5db52cd2ba27f2000cc
+    ports:
+      - "127.0.0.1:6379:6379"
+    
+    environment:
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD}
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - redis-data:/data
+    networks:
+      - internal-net
+
+volumes:
+  hf-cache:
+  qdrant-data:
+  redis-data:
+
+networks:
+  internal-net:
+    driver: bridge
