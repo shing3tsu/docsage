@@ -20,4 +20,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Qwen2.5-7B-Instruct-AWQ is Apache 2.0, and bge-small-en-v1.5 is MIT. The weights download at runtime and aren't covered by this MIT license.
+Qwen3-4B-AWQ is Apache 2.0, and bge-small-en-v1.5 is MIT. The weights download at runtime and aren't covered by this MIT license.
