@@ -1,12 +1,12 @@
 # docsage design
 
-| | |
-|---|---|
-| Author | [name] |
-| Date | 2026-11-07 |
-| Status | Draft |
-| Repository | https://github.com/shing3tsu/docsage |
-| Code license | MIT, copyright 2026 Sina Ghaffari |
+|              |                                      |
+| ------------ | ------------------------------------ |
+| Author       | Sina Ghaffari                        |
+| Date         | 2026-11-07                           |
+| Status       | Draft                                |
+| Repository   | https://github.com/shing3tsu/docsage |
+| Code license | MIT, copyright 2026 Sina Ghaffari    |
 
 ## Overview
 
@@ -171,9 +171,9 @@ Other settings in that file, recorded so the privacy section does not drift from
 
 ### Why each running component was chosen
 
-**vLLM serving `Qwen/Qwen3-4B-AWQ`, not Ollama and not a 7B or an FP16 4B.** Ollama is the obvious laptop default. It is not what this repo runs. The running server is an OpenAI-compatible vLLM process with a pinned Hugging Face revision, AWQ weights the README puts near 2.5 GB, `gpu-memory-utilization` 0.80 (a 6.4 GB cap on this 8 GB card), `max-model-len` 4096, `max-num-seqs` 4, thinking disabled, and the Hermes tool parser for a later MCP server. The public-repo constraint is Apache 2.0, which is why the served model is `Qwen3-4B-AWQ` and not the model named in the stale `LICENSE` sentence. A 7B was not given room on this GPU. An FP16 4B is ruled out because the weights alone would consume the card and leave no KV cache under the 0.80 cap. No benchmark beyond the single chat measurement (about 63 completion tokens per second through the LiteLLM proxy) is cited.
+**vLLM serving** `Qwen/Qwen3-4B-AWQ`**, not Ollama and not a 7B or an FP16 4B.** Ollama is the obvious laptop default. It is not what this repo runs. The running server is an OpenAI-compatible vLLM process with a pinned Hugging Face revision, AWQ weights the README puts near 2.5 GB, `gpu-memory-utilization` 0.80 (a 6.4 GB cap on this 8 GB card), `max-model-len` 4096, `max-num-seqs` 4, thinking disabled, and the Hermes tool parser for a later MCP server. The public-repo constraint is Apache 2.0, which is why the served model is `Qwen3-4B-AWQ` and not the model named in the stale `LICENSE` sentence. A 7B was not given room on this GPU. An FP16 4B is ruled out because the weights alone would consume the card and leave no KV cache under the 0.80 cap. No benchmark beyond the single chat measurement (about 63 completion tokens per second through the LiteLLM proxy) is cited.
 
-**TEI with `bge-small-en-v1.5` on CPU, not a GPU embedder and not a larger embedder.** The GPU is already taken by vLLM. A second GPU-resident service does not fit. The CPU image (`text-embeddings-inference:cpu-1.9`), the pinned revision, the MIT license, and 384 dimensions are the embedder that is actually configured. A larger embedder is not in the Compose file and is not introduced here.
+**TEI with** `bge-small-en-v1.5` **on CPU, not a GPU embedder and not a larger embedder.** The GPU is already taken by vLLM. A second GPU-resident service does not fit. The CPU image (`text-embeddings-inference:cpu-1.9`), the pinned revision, the MIT license, and 384 dimensions are the embedder that is actually configured. A larger embedder is not in the Compose file and is not introduced here.
 
 **Qdrant, not pgvector in the Postgres instance that already exists for LiteLLM.** Postgres is the LiteLLM admin store. The docs index is a different life cycle: its own named volume (`qdrant-data`), REST on `127.0.0.1:6333`, and the README requirement to filter by source. No collection exists yet, so there is nothing to migrate out of Postgres. Putting vectors in the LiteLLM database would tie the index to that admin volume and to Postgres major-version upgrades. That trade is rejected.
 
@@ -326,7 +326,7 @@ Calling `127.0.0.1:8000` and `127.0.0.1:8080` from ingest and from NestJS would 
 
 **Threat model.** One operator on one Windows 11 laptop, Compose running under WSL2. The assets are the `.env` file, the weight cache, the Qdrant volume (empty today), the Redis cache, and the Postgres volume that holds LiteLLM admin data and spend logs. The attacker who matters is another process or user on that machine, or anything that can reach the WSL loopback. This is not a multi-tenant service. Every published port in `compose.yaml` is bound to `127.0.0.1`. There is no LAN bind in the file.
 
-**Secrets.** Names only. The operator copies `.env.example` to `.env` and fills values locally. `.gitignore` ignores `.env*` except `.env.example`, and also ignores `compose.override.yaml`, `*.pem`, `*.key`, and `kubeconfig*`. Variable names in play: `HF_TOKEN`, `VLLM_API_KEY`, `QDRANT_API_KEY`, `QDRANT_LOG_LEVEL`, `REDIS_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `TEI_API_KEY`, `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`. `DATABASE_URL` is composed inside `compose.yaml` from the Postgres variables and the in-network host `postgres`. No value from any of these belongs in git or in this document.
+**Secrets.** Names only. The operator copies `.env.example` to `.env` and fills values locally. `.gitignore` ignores `.env`* except `.env.example`, and also ignores `compose.override.yaml`, `*.pem`, `*.key`, and `kubeconfig*`. Variable names in play: `HF_TOKEN`, `VLLM_API_KEY`, `QDRANT_API_KEY`, `QDRANT_LOG_LEVEL`, `REDIS_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `TEI_API_KEY`, `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`. `DATABASE_URL` is composed inside `compose.yaml` from the Postgres variables and the in-network host `postgres`. No value from any of these belongs in git or in this document.
 
 **Auth that exists today.** LiteLLM expects `LITELLM_MASTER_KEY`. `disable_env_credential_login` is true. vLLM and TEI keys are the env vars above. TEI takes its key as a Compose-interpolated `--api-key` argument, so the value is visible to `docker inspect` and to the container process list. vLLM takes `VLLM_API_KEY` as an environment variable. Qdrant takes `QDRANT__SERVICE__API_KEY`. The unbuilt ingest job and NestJS API will have to present the Qdrant and LiteLLM credentials. This design does not invent a new auth scheme or a header name for them.
 
@@ -392,7 +392,7 @@ The six services are already the Compose project. Rollout of this design is not 
 - **Qdrant for the index, Postgres 18 for LiteLLM admin data.** Separate volume `qdrant-data`. REST published on `127.0.0.1:6333`. gRPC port 6334 is not published and is not described as disabled inside the container. No collection yet. Postgres host port is 15432 because Windows reserved 5432. In-network port is 5432.
 - **Redis exact-match cache only.** `cache: true`, `type: redis`. Not semantic. Host publish `127.0.0.1:6379`. Service DNS name on `internal-net` is `redis`. `REDIS_HOST` and `REDIS_PORT` are environment pass-throughs and are empty in `.env.example`.
 - **LiteLLM v1.108.1 is the only client entry.** Names `chat` and `embed` are declared in `config/litellm.yaml`, mounted read-only at `/app/config.yaml`. `store_model_in_db` is true. Both are stated. The flag is not changed. The proxy waits on healthy Postgres and Redis and does not wait on vLLM or TEI.
-- **Network `internal-net` is a bridge.** It is not `internal: true` and does not block egress. All published ports are `127.0.0.1` only.
+- **Network** `internal-net` **is a bridge.** It is not `internal: true` and does not block egress. All published ports are `127.0.0.1` only.
 - **Citations are the product goal and are not implemented.** Ingest, NestJS `POST /ask` and `GET /health`, and the static UI are not built and have no ports. Metadata to store later: source, license, exact page link. A second ingest run must not duplicate. Hermes stays enabled for a later MCP server that this design does not specify.
 - **Observability stays at healthchecks and Docker logs.** No scraper is added. The only measured rate is about 63 completion tokens per second for a chat through the LiteLLM proxy.
 
@@ -422,11 +422,8 @@ No open questions remain. Model, cache, GPU placement, and ports are settled by 
 No pull request in this plan edits `compose.yaml`, `config/litellm.yaml`, or `.env`. None of them adds Lens, a semantic cache, a 7B model, a second GPU service, or an MCP server.
 
 1. **README only.** This is the step immediately after this draft. Docs only. Update the architecture section so it matches the diagrams in this design: the running six-service Compose topology is separate from the not-built ingest path and the not-built ask path. Status text must stop saying that Compose is still future work. Ingest, the NestJS API, and the static UI stay described as not built. Run instructions are `cp .env.example .env` then `docker compose up -d`. Do not print secret values. Do not change the served model, the ports, or the network name.
-
 2. **Ingest job (not built now).** Shallow-clone each docs repo at a pinned tag or commit, clean Markdown, split each page into chunks by heading, embed through LiteLLM `embed`, and store 384-dimensional vectors plus source, license, and exact page link in Qdrant. The collection is created by this job and is not named in this design. A second run does not create duplicates. Filter by source remains possible. Do not edit Compose, the LiteLLM config, or `.env`. Do not add a GPU embedder.
-
-3. **NestJS `POST /ask` and `GET /health` (not built now).** `/ask` embeds the question with `embed`, searches Qdrant, and calls `chat` so the model answers only from those chunks. The response includes the source, its license, and a link to the exact page. No port is assigned. Do not edit Compose or the LiteLLM config.
-
+3. **NestJS** `POST /ask` **and** `GET /health` **(not built now).** `/ask` embeds the question with `embed`, searches Qdrant, and calls `chat` so the model answers only from those chunks. The response includes the source, its license, and a link to the exact page. No port is assigned. Do not edit Compose or the LiteLLM config.
 4. **Static chat UI (not built now).** A static page that calls `/ask` and shows the answer and its sources. No port is assigned. Do not edit Compose.
 
 A docs-only correction of the stale `Qwen2.5-7B-Instruct-AWQ` sentence in `LICENSE` is allowed as its own small pull request. It can land independently of the four steps above. It replaces that stale name with the model that actually runs, `Qwen/Qwen3-4B-AWQ`, and it does not add a 7B service, a Compose change, or any other code.
