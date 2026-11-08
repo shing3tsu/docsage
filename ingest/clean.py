@@ -19,6 +19,11 @@ def chunk_page(lines):
             heading = stripped.lstrip("#").strip()
             body = []
             return finished
+        if (
+            stripped.startswith(("{{<", "{{%"))
+            and stripped.endswith((">}}", "%}}"))
+        ):
+            return None
         if heading is not None and stripped:
             body.append(stripped)
         return None
