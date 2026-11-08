@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from clean import chunk_page
+from clean import chunk_page, docs_version
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
@@ -215,3 +215,12 @@ sudo apt-get install kubeadm='{{< skew currentVersion >}}.x-*'
             "text": "```shell\n# replace x with the latest patch\nsudo apt-get install kubeadm='1.37.x-*'\n```",
         }
     ]
+
+
+def test_docs_version_reads_the_release_from_hugo_toml():
+    hugo_toml = """\
+latest = "v1.37"
+version = "v1.37"
+version = "v1.36"
+"""
+    assert docs_version(hugo_toml) == "1.37"

@@ -1,15 +1,22 @@
 import re
 
 
-# Release named by hugo.toml in kubernetes/website at 09b7af0f.
-# The skew shortcode prints that version without the leading v.
+# Fallback for a caller that has not read hugo.toml yet.
+# The skew shortcode prints the release without the leading v.
 DOCS_VERSION = "1.37"
 
 
-def visible_word(match):
+def docs_version(hugo_toml):
+    match = re.search(r'^version = "v([^"]+)"', hugo_toml, re.MULTILINE)
+    if match is None:
+        raise ValueError("hugo.toml has no version")
+    return match.group(1)
+
+
+def visible_word(match, version):
     shortcode = match.group(0)
     if shortcode == "{{< skew currentVersion >}}":
-        return DOCS_VERSION
+        return version
     found = re.search(r'text="([^"]*)"', shortcode)
     if found is None:
         return ""
@@ -34,7 +41,7 @@ def visible_heading(text):
         return text
     return headings.get(match.group(1), text)
     
-def chunk_page(lines):
+def chunk_page(lines, version=DOCS_VERSION):
     """Yield one section at a time from a docs page."""
     heading = None
     in_fence = False
@@ -82,7 +89,11 @@ def chunk_page(lines):
             ):
                 held = stripped
                 return None
-        stripped = re.sub(r"\{\{< .+? >\}\}", visible_word, stripped)
+        stripped = re.sub(
+            r"\{\{< .+? >\}\}",
+            lambda match: visible_word(match, version),
+            stripped,
+        )
         if heading is not None and stripped:
             body.append(stripped)
         return None
