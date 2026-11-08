@@ -12,6 +12,7 @@ def visible_heading(text):
     headings = {
         '{{% heading "whatsnext" %}}': "What's next",
         '{{% heading "objectives" %}}': "Objectives",
+        '{{% heading "prerequisites" %}}': "Before you begin",
     }
     return headings.get(text, text)
     

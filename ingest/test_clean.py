@@ -151,3 +151,19 @@ Learn what a Pod is.
             "text": "Learn what a Pod is.",
         }
     ]
+
+
+def test_chunk_page_uses_the_visible_words_of_a_prerequisites_heading():
+    page = """\
+## {{% heading "prerequisites" %}}
+
+Install a container runtime.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Before you begin",
+            "text": "Install a container runtime.",
+        }
+    ]
