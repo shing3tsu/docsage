@@ -38,6 +38,12 @@ def chunk_page(lines):
             and stripped.endswith((">}}", "%}}"))
         ):
             return None
+        elif (
+            not in_fence
+            and stripped.startswith("<!--")
+            and stripped.endswith("-->")
+        ):
+            return None
         if not in_fence:
             if held is not None:
                 stripped = held + stripped

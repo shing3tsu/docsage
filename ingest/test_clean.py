@@ -105,3 +105,19 @@ term_id="deployment" >}} or a Job.
             "text": "Create them using a Deployment or a Job.",
         }
     ]
+
+def test_chunk_page_drops_an_html_comment():
+    page = """\
+# Pods
+
+<!--intentionally repeats some text from earlier in the page, with more detail -->
+A pod groups containers.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "A pod groups containers.",
+        }
+    ]
