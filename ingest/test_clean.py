@@ -136,3 +136,18 @@ Learn about the lifecycle of a Pod.
             "text": "Learn about the lifecycle of a Pod.",
         }
     ]
+
+def test_chunk_page_uses_the_visible_words_of_an_objectives_heading():
+    page = """\
+## {{% heading "objectives" %}}
+
+Learn what a Pod is.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Objectives",
+            "text": "Learn what a Pod is.",
+        }
+    ]

@@ -9,9 +9,11 @@ def visible_word(match):
 
 
 def visible_heading(text):
-    if text == '{{% heading "whatsnext" %}}':
-        return "What's next"
-    return text
+    headings = {
+        '{{% heading "whatsnext" %}}': "What's next",
+        '{{% heading "objectives" %}}': "Objectives",
+    }
+    return headings.get(text, text)
     
 def chunk_page(lines):
     """Yield one section at a time from a docs page."""
