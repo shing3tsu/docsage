@@ -35,3 +35,24 @@ def test_chunk_page_drops_shortcode_markers_and_keeps_the_note_text():
             "text": "Remember this.\nA pod groups containers.",
         }
     ]
+
+def test_chunk_page_keeps_hash_comments_inside_a_code_fence():
+    page = """\
+# Pods
+
+```yaml
+apiVersion: v1
+# This is the pod template
+kind: Pod
+```
+
+A pod groups containers.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "```yaml\napiVersion: v1\n# This is the pod template\nkind: Pod\n```\nA pod groups containers.",
+        }
+    ]
