@@ -121,3 +121,18 @@ A pod groups containers.
             "text": "A pod groups containers.",
         }
     ]
+
+def test_chunk_page_uses_the_visible_words_of_a_heading_shortcode():
+    page = """\
+## {{% heading "whatsnext" %}}
+
+Learn about the lifecycle of a Pod.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "What's next",
+            "text": "Learn about the lifecycle of a Pod.",
+        }
+    ]

@@ -6,6 +6,12 @@ def visible_word(match):
     if found is None:
         return ""
     return found.group(1)
+
+
+def visible_heading(text):
+    if text == '{{% heading "whatsnext" %}}':
+        return "What's next"
+    return text
     
 def chunk_page(lines):
     """Yield one section at a time from a docs page."""
@@ -29,7 +35,7 @@ def chunk_page(lines):
             finished = None
             if heading is not None:
                 finished = {"heading": heading, "text": "\n".join(body).strip()}
-            heading = stripped.lstrip("#").strip()
+            heading = visible_heading(stripped.lstrip("#").strip())
             body = []
             return finished
         elif (
