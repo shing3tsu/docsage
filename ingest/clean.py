@@ -1,8 +1,16 @@
 import re
 
 
+# Release named by hugo.toml in kubernetes/website at 09b7af0f.
+# The skew shortcode prints that version without the leading v.
+DOCS_VERSION = "1.37"
+
+
 def visible_word(match):
-    found = re.search(r'text="([^"]*)"', match.group(0))
+    shortcode = match.group(0)
+    if shortcode == "{{< skew currentVersion >}}":
+        return DOCS_VERSION
+    found = re.search(r'text="([^"]*)"', shortcode)
     if found is None:
         return ""
     return found.group(1)

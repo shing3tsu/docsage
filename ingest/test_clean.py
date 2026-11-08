@@ -182,3 +182,18 @@ Print the pods.
             "text": "Print the pods.",
         }
     ]
+
+def test_chunk_page_replaces_the_current_version_shortcode():
+    page = """\
+# Pods
+
+The latest release is {{< skew currentVersion >}}.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "The latest release is 1.37.",
+        }
+    ]
