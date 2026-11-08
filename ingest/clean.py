@@ -1,3 +1,12 @@
+import re
+
+
+def visible_word(match):
+    found = re.search(r'text="([^"]*)"', match.group(0))
+    if found is None:
+        return ""
+    return found.group(1)
+    
 def chunk_page(lines):
     """Yield one section at a time from a docs page."""
     heading = None
@@ -28,6 +37,8 @@ def chunk_page(lines):
             and stripped.endswith((">}}", "%}}"))
         ):
             return None
+        if not in_fence:
+            stripped = re.sub(r"\{\{< .+? >\}\}", visible_word, stripped)
         if heading is not None and stripped:
             body.append(stripped)
         return None

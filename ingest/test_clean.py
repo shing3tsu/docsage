@@ -56,3 +56,19 @@ A pod groups containers.
             "text": "```yaml\napiVersion: v1\n# This is the pod template\nkind: Pod\n```\nA pod groups containers.",
         }
     ]
+
+
+def test_chunk_page_replaces_an_inline_shortcode_with_its_visible_text():
+    page = """\
+# Pods
+
+A pod isolates a {{< glossary_tooltip text="container" term_id="container" >}}.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "A pod isolates a container.",
+        }
+    ]
