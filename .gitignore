@@ -21,3 +21,8 @@ logs/*
 .idea/
 .cursor/
 .DS_Store
+
+# --- Python ----------------------------------------------------------------
+.venv/
+__pycache__/
+.pytest_cache/
