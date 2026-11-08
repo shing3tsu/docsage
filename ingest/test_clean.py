@@ -197,3 +197,21 @@ The latest release is {{< skew currentVersion >}}.
             "text": "The latest release is 1.37.",
         }
     ]
+
+def test_chunk_page_replaces_a_version_shortcode_inside_a_code_fence():
+    page = """\
+# Pods
+
+```shell
+# replace x with the latest patch
+sudo apt-get install kubeadm='{{< skew currentVersion >}}.x-*'
+```
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "```shell\n# replace x with the latest patch\nsudo apt-get install kubeadm='1.37.x-*'\n```",
+        }
+    ]

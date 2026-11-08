@@ -82,7 +82,7 @@ def chunk_page(lines):
             ):
                 held = stripped
                 return None
-            stripped = re.sub(r"\{\{< .+? >\}\}", visible_word, stripped)
+        stripped = re.sub(r"\{\{< .+? >\}\}", visible_word, stripped)
         if heading is not None and stripped:
             body.append(stripped)
         return None
