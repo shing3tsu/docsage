@@ -11,6 +11,7 @@ def chunk_page(lines):
     """Yield one section at a time from a docs page."""
     heading = None
     in_fence = False
+    held = None
     body = []
     lines = iter(lines)
     first = next(lines, "")
@@ -20,7 +21,7 @@ def chunk_page(lines):
                 break
 
     def take(line):
-        nonlocal heading, body, in_fence
+        nonlocal heading, body, in_fence, held
         stripped = line.strip()
         if stripped.startswith("```"):
             in_fence = not in_fence
@@ -38,6 +39,16 @@ def chunk_page(lines):
         ):
             return None
         if not in_fence:
+            if held is not None:
+                stripped = held + stripped
+                held = None
+            if (
+                ("{{<" in stripped or "{{%" in stripped)
+                and ">}}" not in stripped
+                and "%}}" not in stripped
+            ):
+                held = stripped
+                return None
             stripped = re.sub(r"\{\{< .+? >\}\}", visible_word, stripped)
         if heading is not None and stripped:
             body.append(stripped)

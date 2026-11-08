@@ -72,3 +72,36 @@ A pod isolates a {{< glossary_tooltip text="container" term_id="container" >}}.
             "text": "A pod isolates a container.",
         }
     ]
+
+def test_chunk_page_replaces_a_shortcode_split_across_lines():
+    page = """\
+# Pods
+
+Create them using a {{< glossary_tooltip text="Deployment"
+term_id="deployment" >}} or a Job.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "Create them using a Deployment or a Job.",
+        }
+    ]
+
+
+def test_chunk_page_replaces_a_shortcode_split_across_lines():
+    page = """\
+# Pods
+
+Create them using a {{< glossary_tooltip text="Deployment"
+term_id="deployment" >}} or a Job.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Pods",
+            "text": "Create them using a Deployment or a Job.",
+        }
+    ]
