@@ -167,3 +167,18 @@ Install a container runtime.
             "text": "Install a container runtime.",
         }
     ]
+
+def test_chunk_page_uses_the_visible_words_of_a_synopsis_heading():
+    page = """\
+## {{% heading "synopsis" %}}
+
+Print the pods.
+"""
+    sections = list(chunk_page(page.splitlines(True)))
+
+    assert sections == [
+        {
+            "heading": "Synopsis",
+            "text": "Print the pods.",
+        }
+    ]

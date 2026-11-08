@@ -10,11 +10,21 @@ def visible_word(match):
 
 def visible_heading(text):
     headings = {
-        '{{% heading "whatsnext" %}}': "What's next",
-        '{{% heading "objectives" %}}': "Objectives",
-        '{{% heading "prerequisites" %}}': "Before you begin",
+        "whatsnext": "What's next",
+        "objectives": "Objectives",
+        "prerequisites": "Before you begin",
+        "synopsis": "Synopsis",
+        "options": "Options",
+        "seealso": "See Also",
+        "parentoptions": "Parent Options Inherited",
+        "examples": "Examples",
+        "cleanup": "Cleaning up",
+        "envvars": "Environment variables",
     }
-    return headings.get(text, text)
+    match = re.fullmatch(r'\{\{% heading "([^"]+)" %\}\}', text)
+    if match is None:
+        return text
+    return headings.get(match.group(1), text)
     
 def chunk_page(lines):
     """Yield one section at a time from a docs page."""
