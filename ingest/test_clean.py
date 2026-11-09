@@ -19,6 +19,8 @@ def test_chunk_page_drops_front_matter_and_splits_on_headings():
             "version": "1.37",
             "path": "testdata/page.md",
             "url": "",
+            "source": "",
+            "license": "",
         },
         {
             "heading": "What is a pod?",
@@ -26,6 +28,8 @@ def test_chunk_page_drops_front_matter_and_splits_on_headings():
             "version": "1.37",
             "path": "testdata/page.md",
             "url": "",
+            "source": "",
+            "license": "",
         },
     ]
 
@@ -41,6 +45,8 @@ A pod is a group of containers.
             page.splitlines(True),
             path="content/en/docs/concepts/workloads/pods/_index.md",
             release_url="https://kubernetes.io",
+            source="kubernetes",
+            license="CC BY 4.0",
         )
     )
 
@@ -51,6 +57,8 @@ A pod is a group of containers.
             "version": "1.37",
             "path": "content/en/docs/concepts/workloads/pods/_index.md",
             "url": "https://kubernetes.io/docs/concepts/workloads/pods/",
+            "source": "kubernetes",
+            "license": "CC BY 4.0",
         }
     ]
 
@@ -73,6 +81,8 @@ def test_chunk_page_drops_shortcode_markers_and_keeps_the_note_text():
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -97,6 +107,8 @@ A pod groups containers.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -116,6 +128,8 @@ A pod isolates a {{< glossary_tooltip text="container" term_id="container" >}}.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -135,6 +149,8 @@ term_id="deployment" >}} or a Job.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -155,6 +171,8 @@ term_id="deployment" >}} or a Job.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -174,6 +192,8 @@ A pod groups containers.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -192,6 +212,8 @@ Learn about the lifecycle of a Pod.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -210,6 +232,8 @@ Learn what a Pod is.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -229,6 +253,8 @@ Install a container runtime.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -247,6 +273,8 @@ Print the pods.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -265,6 +293,8 @@ The latest release is {{< skew currentVersion >}}.
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
@@ -286,6 +316,8 @@ sudo apt-get install kubeadm='{{< skew currentVersion >}}.x-*'
             "version": "1.37",
             "path": "",
             "url": "",
+            "source": "",
+            "license": "",
         }
     ]
 
