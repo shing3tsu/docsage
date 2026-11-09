@@ -42,6 +42,21 @@ def docs_releases(hugo_toml):
     return releases
 
 
+def page_url(release_url, path):
+    """Return the public page link for one docs file."""
+    prefix = "content/en/"
+    if not path.startswith(prefix):
+        raise ValueError("docs path is outside content/en")
+    relative = path[len(prefix):]
+    if relative.endswith("_index.md"):
+        relative = relative[: -len("_index.md")]
+    elif relative.endswith(".md"):
+        relative = relative[: -len(".md")] + "/"
+    else:
+        raise ValueError("docs path is not a markdown page")
+    return release_url.rstrip("/") + "/" + relative
+
+
 def visible_word(match, version):
     shortcode = match.group(0)
     if shortcode == "{{< skew currentVersion >}}":

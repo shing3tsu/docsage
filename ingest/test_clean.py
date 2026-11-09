@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from clean import chunk_page, docs_releases, docs_version
+from clean import chunk_page, docs_releases, docs_version, page_url
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
@@ -290,3 +290,20 @@ url = "https://v1-36.docs.kubernetes.io"
             "latest": False,
         },
     ]
+
+
+def test_page_url_builds_the_public_link_for_a_docs_file():
+    assert (
+        page_url(
+            "https://kubernetes.io",
+            "content/en/docs/concepts/workloads/pods/_index.md",
+        )
+        == "https://kubernetes.io/docs/concepts/workloads/pods/"
+    )
+    assert (
+        page_url(
+            "https://v1-36.docs.kubernetes.io/",
+            "content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+        )
+        == "https://v1-36.docs.kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/"
+    )
