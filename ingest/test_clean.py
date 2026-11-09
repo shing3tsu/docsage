@@ -7,6 +7,7 @@ from clean import (
     chunk_page,
     docs_releases,
     docs_version,
+    release_for,
     page_url,
     point_id,
     sections_of,
@@ -369,6 +370,37 @@ url = "https://v1-36.docs.kubernetes.io"
             "latest": False,
         },
     ]
+
+
+def test_release_for_returns_the_checkout_version():
+    hugo_toml = """\
+latest = "v1.37"
+version = "v1.37"
+docsbranch = "main"
+
+[[params.versions]]
+version = "v1.37"
+docsbranch = "main"
+url = "https://kubernetes.io"
+
+[[params.versions]]
+version = "v1.36"
+docsbranch = "release-1.36"
+url = "https://v1-36.docs.kubernetes.io"
+"""
+    assert release_for(hugo_toml) == {
+        "version": "1.37",
+        "branch": "main",
+        "url": "https://kubernetes.io",
+        "latest": True,
+    }
+    older = hugo_toml.replace('version = "v1.37"\ndocsbranch', 'version = "v1.36"\ndocsbranch', 1)
+    assert release_for(older) == {
+        "version": "1.36",
+        "branch": "release-1.36",
+        "url": "https://v1-36.docs.kubernetes.io",
+        "latest": False,
+    }
 
 
 def test_page_url_builds_the_public_link_for_a_docs_file():

@@ -44,6 +44,15 @@ def docs_releases(hugo_toml):
     return releases
 
 
+def release_for(hugo_toml):
+    """Return the published release this checkout documents."""
+    version = docs_version(hugo_toml)
+    for release in docs_releases(hugo_toml):
+        if release["version"] == version:
+            return release
+    raise ValueError("hugo.toml version is not in the versions table")
+
+
 def page_url(release_url, path):
     """Return the public page link for one docs file."""
     prefix = "content/en/"
