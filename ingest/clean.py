@@ -85,7 +85,7 @@ def visible_heading(text):
         return text
     return headings.get(match.group(1), text)
     
-def chunk_page(lines, version=DOCS_VERSION, path=""):
+def chunk_page(lines, version=DOCS_VERSION, path="", release_url=""):
     """Yield one section at a time from a docs page."""
     heading = None
     in_fence = False
@@ -99,11 +99,16 @@ def chunk_page(lines, version=DOCS_VERSION, path=""):
                 break
 
     def finished_section():
+        if release_url:
+            url = page_url(release_url, path)
+        else:
+            url = ""
         return {
             "heading": heading,
             "text": "\n".join(body).strip(),
             "version": version,
             "path": path,
+            "url": url,
         }
 
     def take(line):
