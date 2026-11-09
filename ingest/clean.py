@@ -64,6 +64,23 @@ def point_id(source, version, path, heading, position):
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
+def sections_of(lines, version, path, release_url, source, license):
+    """Yield each section of a page with its stable id."""
+    sections = chunk_page(
+        lines,
+        version=version,
+        path=path,
+        release_url=release_url,
+        source=source,
+        license=license,
+    )
+    for position, section in enumerate(sections):
+        section["id"] = point_id(
+            source, version, path, section["heading"], position
+        )
+        yield section
+
+
 def visible_word(match, version):
     shortcode = match.group(0)
     if shortcode == "{{< skew currentVersion >}}":

@@ -3,7 +3,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from clean import chunk_page, docs_releases, docs_version, page_url, point_id
+from clean import (
+    chunk_page,
+    docs_releases,
+    docs_version,
+    page_url,
+    point_id,
+    sections_of,
+)
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
@@ -394,3 +401,30 @@ def test_point_id_is_stable_for_one_section_and_changes_with_position():
     assert first == again
     assert first != moved
     assert len(first) == 64
+
+
+def test_sections_of_assigns_a_stable_id_to_each_section():
+    with PAGE.open() as lines:
+        sections = list(
+            sections_of(
+                lines,
+                version="1.37",
+                path="testdata/page.md",
+                release_url="",
+                source="kubernetes",
+                license="CC BY 4.0",
+            )
+        )
+
+    assert [section["heading"] for section in sections] == [
+        "Pods",
+        "What is a pod?",
+    ]
+    assert sections[0]["id"] != sections[1]["id"]
+    assert sections[1]["id"] == point_id(
+        "kubernetes",
+        "1.37",
+        "testdata/page.md",
+        "What is a pod?",
+        1,
+    )
