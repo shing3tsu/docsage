@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from clean import chunk_page, docs_version
+from clean import chunk_page, docs_releases, docs_version
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
@@ -13,8 +13,16 @@ def test_chunk_page_drops_front_matter_and_splits_on_headings():
         sections = list(chunk_page(lines))
 
     assert sections == [
-        {"heading": "Pods", "text": "A pod is a group of containers."},
-        {"heading": "What is a pod?", "text": "The spec is the desired state."},
+        {
+            "heading": "Pods",
+            "text": "A pod is a group of containers.",
+            "version": "1.37",
+        },
+        {
+            "heading": "What is a pod?",
+            "text": "The spec is the desired state.",
+            "version": "1.37",
+        },
     ]
 
 def test_chunk_page_drops_shortcode_markers_and_keeps_the_note_text(): 
@@ -33,6 +41,7 @@ def test_chunk_page_drops_shortcode_markers_and_keeps_the_note_text():
         {
             "heading": "Pods",
             "text": "Remember this.\nA pod groups containers.",
+            "version": "1.37",
         }
     ]
 
@@ -54,6 +63,7 @@ A pod groups containers.
         {
             "heading": "Pods",
             "text": "```yaml\napiVersion: v1\n# This is the pod template\nkind: Pod\n```\nA pod groups containers.",
+            "version": "1.37",
         }
     ]
 
@@ -70,6 +80,7 @@ A pod isolates a {{< glossary_tooltip text="container" term_id="container" >}}.
         {
             "heading": "Pods",
             "text": "A pod isolates a container.",
+            "version": "1.37",
         }
     ]
 
@@ -86,6 +97,7 @@ term_id="deployment" >}} or a Job.
         {
             "heading": "Pods",
             "text": "Create them using a Deployment or a Job.",
+            "version": "1.37",
         }
     ]
 
@@ -103,6 +115,7 @@ term_id="deployment" >}} or a Job.
         {
             "heading": "Pods",
             "text": "Create them using a Deployment or a Job.",
+            "version": "1.37",
         }
     ]
 
@@ -119,6 +132,7 @@ A pod groups containers.
         {
             "heading": "Pods",
             "text": "A pod groups containers.",
+            "version": "1.37",
         }
     ]
 
@@ -134,6 +148,7 @@ Learn about the lifecycle of a Pod.
         {
             "heading": "What's next",
             "text": "Learn about the lifecycle of a Pod.",
+            "version": "1.37",
         }
     ]
 
@@ -149,6 +164,7 @@ Learn what a Pod is.
         {
             "heading": "Objectives",
             "text": "Learn what a Pod is.",
+            "version": "1.37",
         }
     ]
 
@@ -165,6 +181,7 @@ Install a container runtime.
         {
             "heading": "Before you begin",
             "text": "Install a container runtime.",
+            "version": "1.37",
         }
     ]
 
@@ -180,6 +197,7 @@ Print the pods.
         {
             "heading": "Synopsis",
             "text": "Print the pods.",
+            "version": "1.37",
         }
     ]
 
@@ -195,6 +213,7 @@ The latest release is {{< skew currentVersion >}}.
         {
             "heading": "Pods",
             "text": "The latest release is 1.37.",
+            "version": "1.37",
         }
     ]
 
@@ -213,6 +232,7 @@ sudo apt-get install kubeadm='{{< skew currentVersion >}}.x-*'
         {
             "heading": "Pods",
             "text": "```shell\n# replace x with the latest patch\nsudo apt-get install kubeadm='1.37.x-*'\n```",
+            "version": "1.37",
         }
     ]
 
@@ -224,3 +244,35 @@ version = "v1.37"
 version = "v1.36"
 """
     assert docs_version(hugo_toml) == "1.37"
+
+
+def test_docs_releases_lists_each_published_version():
+    hugo_toml = """\
+latest = "v1.37"
+version = "v1.37"
+docsbranch = "main"
+
+[[params.versions]]
+version = "v1.37"
+docsbranch = "main"
+url = "https://kubernetes.io"
+
+[[params.versions]]
+version = "v1.36"
+docsbranch = "release-1.36"
+url = "https://v1-36.docs.kubernetes.io"
+"""
+    assert docs_releases(hugo_toml) == [
+        {
+            "version": "1.37",
+            "branch": "main",
+            "url": "https://kubernetes.io",
+            "latest": True,
+        },
+        {
+            "version": "1.36",
+            "branch": "release-1.36",
+            "url": "https://v1-36.docs.kubernetes.io",
+            "latest": False,
+        },
+    ]

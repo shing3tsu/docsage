@@ -13,6 +13,35 @@ def docs_version(hugo_toml):
     return match.group(1)
 
 
+def docs_releases(hugo_toml):
+    """Return one record for each published release in hugo.toml."""
+    latest_match = re.search(r'^latest = "v([^"]+)"', hugo_toml, re.MULTILINE)
+    if latest_match is None:
+        raise ValueError("hugo.toml has no latest")
+    latest = latest_match.group(1)
+    releases = []
+    blocks = re.split(r'^\[\[params\.versions\]\]\s*', hugo_toml, flags=re.MULTILINE)
+    for block in blocks[1:]:
+        block = re.split(r'^\[', block, maxsplit=1, flags=re.MULTILINE)[0]
+        version = re.search(r'^version = "v([^"]+)"', block, re.MULTILINE)
+        branch = re.search(r'^docsbranch = "([^"]+)"', block, re.MULTILINE)
+        url = re.search(r'^url = "([^"]+)"', block, re.MULTILINE)
+        if version is None or branch is None or url is None:
+            raise ValueError("hugo.toml version entry is incomplete")
+        number = version.group(1)
+        releases.append(
+            {
+                "version": number,
+                "branch": branch.group(1),
+                "url": url.group(1),
+                "latest": number == latest,
+            }
+        )
+    if not releases:
+        raise ValueError("hugo.toml has no versions")
+    return releases
+
+
 def visible_word(match, version):
     shortcode = match.group(0)
     if shortcode == "{{< skew currentVersion >}}":
@@ -54,6 +83,13 @@ def chunk_page(lines, version=DOCS_VERSION):
             if line.strip() == "---":
                 break
 
+    def finished_section():
+        return {
+            "heading": heading,
+            "text": "\n".join(body).strip(),
+            "version": version,
+        }
+
     def take(line):
         nonlocal heading, body, in_fence, held
         stripped = line.strip()
@@ -62,7 +98,7 @@ def chunk_page(lines, version=DOCS_VERSION):
         elif not in_fence and stripped.startswith("#"):
             finished = None
             if heading is not None:
-                finished = {"heading": heading, "text": "\n".join(body).strip()}
+                finished = finished_section()
             heading = visible_heading(stripped.lstrip("#").strip())
             body = []
             return finished
@@ -109,4 +145,4 @@ def chunk_page(lines, version=DOCS_VERSION):
             yield finished
 
     if heading is not None:
-        yield {"heading": heading, "text": "\n".join(body).strip()}
+        yield finished_section()
