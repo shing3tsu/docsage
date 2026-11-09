@@ -10,6 +10,7 @@ from clean import (
     page_url,
     point_id,
     sections_of,
+    sections_under,
 )
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
@@ -428,3 +429,27 @@ def test_sections_of_assigns_a_stable_id_to_each_section():
         "What is a pod?",
         1,
     )
+
+def test_sections_under_reads_every_docs_page(tmp_path):
+    pods = tmp_path / "content" / "en" / "docs" / "concepts" / "workloads" / "pods"
+    pods.mkdir(parents=True)
+    (pods / "_index.md").write_text("# Pods\n\nA pod is a group of containers.\n")
+    (pods / "pod-lifecycle.md").write_text("# Pod lifecycle\n\nA pod starts and stops.\n")
+    (tmp_path / "README.md").write_text("# Ignore me\n")
+
+    sections = list(
+        sections_under(
+            tmp_path,
+            version="1.37",
+            release_url="https://kubernetes.io",
+            source="kubernetes",
+            license="CC BY 4.0",
+        )
+    )
+
+    assert [section["path"] for section in sections] == [
+        "content/en/docs/concepts/workloads/pods/_index.md",
+        "content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+    ]
+    assert sections[0]["id"] != sections[1]["id"]
+    assert sections[0]["url"] == "https://kubernetes.io/docs/concepts/workloads/pods/"

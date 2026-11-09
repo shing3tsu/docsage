@@ -1,5 +1,6 @@
 import hashlib
 import re
+from pathlib import Path
 
 
 # Fallback for a caller that has not read hugo.toml yet.
@@ -79,6 +80,23 @@ def sections_of(lines, version, path, release_url, source, license):
             source, version, path, section["heading"], position
         )
         yield section
+
+
+def sections_under(repo, version, release_url, source, license):
+    """Yield every section under content/en/docs, in path order."""
+    repo = Path(repo)
+    docs = repo / "content" / "en" / "docs"
+    for path in sorted(docs.rglob("*.md")):
+        relative = path.relative_to(repo).as_posix()
+        with path.open() as lines:
+            yield from sections_of(
+                lines,
+                version=version,
+                path=relative,
+                release_url=release_url,
+                source=source,
+                license=license,
+            )
 
 
 def visible_word(match, version):
