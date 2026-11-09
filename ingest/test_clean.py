@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from clean import chunk_page, docs_releases, docs_version, page_url
+from clean import chunk_page, docs_releases, docs_version, page_url, point_id
 
 PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
@@ -378,3 +378,19 @@ def test_page_url_builds_the_public_link_for_a_docs_file():
         )
         == "https://v1-36.docs.kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/"
     )
+
+
+def test_point_id_is_stable_for_one_section_and_changes_with_position():
+    kwargs = {
+        "source": "kubernetes",
+        "version": "1.37",
+        "path": "content/en/docs/concepts/workloads/pods/_index.md",
+        "heading": "Pods",
+    }
+    first = point_id(**kwargs, position=0)
+    again = point_id(**kwargs, position=0)
+    moved = point_id(**kwargs, position=1)
+
+    assert first == again
+    assert first != moved
+    assert len(first) == 64

@@ -1,3 +1,4 @@
+import hashlib
 import re
 
 
@@ -55,6 +56,12 @@ def page_url(release_url, path):
     else:
         raise ValueError("docs path is not a markdown page")
     return release_url.rstrip("/") + "/" + relative
+
+
+def point_id(source, version, path, heading, position):
+    """Return a stable id for one section of one docs release."""
+    raw = "\0".join((source, version, path, heading, str(position)))
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 def visible_word(match, version):
