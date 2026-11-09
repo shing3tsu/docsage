@@ -10,6 +10,7 @@ from clean import (
     release_for,
     page_url,
     point_id,
+    point_uuid,
     sections_from_checkout,
     sections_of,
     sections_under,
@@ -435,6 +436,12 @@ def test_point_id_is_stable_for_one_section_and_changes_with_position():
     assert first == again
     assert first != moved
     assert len(first) == 64
+
+
+def test_point_uuid_uses_the_first_half_of_the_section_id():
+    section_id = "311892994e21e6b730bfbd02b3f50470df4f0539c01bfdc52e89fdb1accfbdcb"
+    assert point_uuid(section_id) == "31189299-4e21-e6b7-30bf-bd02b3f50470"
+    assert point_uuid(section_id) == point_uuid(section_id)
 
 
 def test_sections_of_assigns_a_stable_id_to_each_section():

@@ -1,5 +1,6 @@
 import hashlib
 import re
+import uuid
 from pathlib import Path
 
 
@@ -72,6 +73,11 @@ def point_id(source, version, path, heading, position):
     """Return a stable id for one section of one docs release."""
     raw = "\0".join((source, version, path, heading, str(position)))
     return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def point_uuid(section_id):
+    """Return the Qdrant point id for one section hash."""
+    return str(uuid.UUID(hex=section_id[:32]))
 
 
 def sections_of(lines, version, path, release_url, source, license):
