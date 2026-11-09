@@ -108,6 +108,19 @@ def sections_under(repo, version, release_url, source, license):
             )
 
 
+def sections_from_checkout(repo, source, license):
+    """Yield every English docs section for the release this checkout documents."""
+    repo = Path(repo)
+    release = release_for((repo / "hugo.toml").read_text())
+    yield from sections_under(
+        repo,
+        version=release["version"],
+        release_url=release["url"],
+        source=source,
+        license=license,
+    )
+
+
 def visible_word(match, version):
     shortcode = match.group(0)
     if shortcode == "{{< skew currentVersion >}}":

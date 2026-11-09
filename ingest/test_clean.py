@@ -10,6 +10,7 @@ from clean import (
     release_for,
     page_url,
     point_id,
+    sections_from_checkout,
     sections_of,
     sections_under,
 )
@@ -485,3 +486,38 @@ def test_sections_under_reads_every_docs_page(tmp_path):
     ]
     assert sections[0]["id"] != sections[1]["id"]
     assert sections[0]["url"] == "https://kubernetes.io/docs/concepts/workloads/pods/"
+
+
+def test_sections_from_checkout_uses_the_release_in_hugo_toml(tmp_path):
+    page = tmp_path / "content" / "en" / "docs" / "concepts" / "workloads" / "pods"
+    page.mkdir(parents=True)
+    (page / "_index.md").write_text("# Pods\n\nA pod is a group of containers.\n")
+    (tmp_path / "hugo.toml").write_text(
+        """\
+latest = "v1.37"
+version = "v1.36"
+
+[[params.versions]]
+version = "v1.37"
+docsbranch = "main"
+url = "https://kubernetes.io"
+
+[[params.versions]]
+version = "v1.36"
+docsbranch = "release-1.36"
+url = "https://v1-36.docs.kubernetes.io"
+"""
+    )
+
+    sections = list(
+        sections_from_checkout(tmp_path, source="kubernetes", license="CC BY 4.0")
+    )
+
+    assert len(sections) == 1
+    assert sections[0]["version"] == "1.36"
+    assert (
+        sections[0]["url"]
+        == "https://v1-36.docs.kubernetes.io/docs/concepts/workloads/pods/"
+    )
+    assert sections[0]["source"] == "kubernetes"
+    assert sections[0]["license"] == "CC BY 4.0"
