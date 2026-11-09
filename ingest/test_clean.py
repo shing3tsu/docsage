@@ -10,18 +10,20 @@ PAGE = Path(__file__).resolve().parent / "testdata" / "page.md"
 
 def test_chunk_page_drops_front_matter_and_splits_on_headings():
     with PAGE.open() as lines:
-        sections = list(chunk_page(lines))
+        sections = list(chunk_page(lines, path="testdata/page.md"))
 
     assert sections == [
         {
             "heading": "Pods",
             "text": "A pod is a group of containers.",
             "version": "1.37",
+            "path": "testdata/page.md",
         },
         {
             "heading": "What is a pod?",
             "text": "The spec is the desired state.",
             "version": "1.37",
+            "path": "testdata/page.md",
         },
     ]
 
@@ -42,6 +44,7 @@ def test_chunk_page_drops_shortcode_markers_and_keeps_the_note_text():
             "heading": "Pods",
             "text": "Remember this.\nA pod groups containers.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -64,6 +67,7 @@ A pod groups containers.
             "heading": "Pods",
             "text": "```yaml\napiVersion: v1\n# This is the pod template\nkind: Pod\n```\nA pod groups containers.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -81,6 +85,7 @@ A pod isolates a {{< glossary_tooltip text="container" term_id="container" >}}.
             "heading": "Pods",
             "text": "A pod isolates a container.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -98,6 +103,7 @@ term_id="deployment" >}} or a Job.
             "heading": "Pods",
             "text": "Create them using a Deployment or a Job.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -116,6 +122,7 @@ term_id="deployment" >}} or a Job.
             "heading": "Pods",
             "text": "Create them using a Deployment or a Job.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -133,6 +140,7 @@ A pod groups containers.
             "heading": "Pods",
             "text": "A pod groups containers.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -149,6 +157,7 @@ Learn about the lifecycle of a Pod.
             "heading": "What's next",
             "text": "Learn about the lifecycle of a Pod.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -165,6 +174,7 @@ Learn what a Pod is.
             "heading": "Objectives",
             "text": "Learn what a Pod is.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -182,6 +192,7 @@ Install a container runtime.
             "heading": "Before you begin",
             "text": "Install a container runtime.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -198,6 +209,7 @@ Print the pods.
             "heading": "Synopsis",
             "text": "Print the pods.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -214,6 +226,7 @@ The latest release is {{< skew currentVersion >}}.
             "heading": "Pods",
             "text": "The latest release is 1.37.",
             "version": "1.37",
+            "path": "",
         }
     ]
 
@@ -233,6 +246,7 @@ sudo apt-get install kubeadm='{{< skew currentVersion >}}.x-*'
             "heading": "Pods",
             "text": "```shell\n# replace x with the latest patch\nsudo apt-get install kubeadm='1.37.x-*'\n```",
             "version": "1.37",
+            "path": "",
         }
     ]
 

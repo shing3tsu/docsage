@@ -70,7 +70,7 @@ def visible_heading(text):
         return text
     return headings.get(match.group(1), text)
     
-def chunk_page(lines, version=DOCS_VERSION):
+def chunk_page(lines, version=DOCS_VERSION, path=""):
     """Yield one section at a time from a docs page."""
     heading = None
     in_fence = False
@@ -88,6 +88,7 @@ def chunk_page(lines, version=DOCS_VERSION):
             "heading": heading,
             "text": "\n".join(body).strip(),
             "version": version,
+            "path": path,
         }
 
     def take(line):
